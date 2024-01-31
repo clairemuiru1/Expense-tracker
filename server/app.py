@@ -1,56 +1,57 @@
 #!/usr/bin/env python3
 
 import os
-from flask import Flask, request, make_response, jsonify, session 
+from flask import Flask, request, make_response, jsonify
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from models import db, User, Transaction, Category, Transaction, Budget, Transaction
-from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask import request, session
+from flask_restful import Resource
+from sqlalchemy.exc import IntegrityError
+
+from models import db, Transaction, Category , Budget
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
+# CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+migrate = Migrate(app, db)
+
 db.init_app(app)
-api= Api(app)
-CORS(app)
+api = Api(app)
 
-class SingUp(Resource):
-    def post(self):
-        pass
-
-class Login(Resource):
-    def post(self):
-        pass
-
-class Logout(Resource):
-    def delete(self):
-        pass
+class Signup(Resource):
+    pass
 
 class CheckSession(Resource):
-    def get(self):
-        pass
+    pass
+
+class Login(Resource):
+    pass
+
+class Logout(Resource):
+    pass
 
 class TransactionResource(Resource):
-    def get(self):
-        pass
+    pass
 
 class CategoryResource(Resource):
-    def get(self):
-        pass
+    pass
 
 class BudgetResource(Resource):
-    def get(self):
-        pass
+    pass
 
+api.add_resource(Signup, '/signup', endpoint='signup')
+api.add_resource(CheckSession, '/check_session', endpoint='check_session')
+api.add_resource(Login, '/login', endpoint='login')
+api.add_resource(Logout, '/logout', endpoint='logout')
+api.add_resource(TransactionResource, '/transactions')
+api.add_resource(CategoryResource, '/categories')
+api.add_resource(BudgetResource, '/budgets')
 
-api.add_resource(SingUp, '/singup')
-api.add_resource(CheckSession, '/check_session')
-api.add_resource(Login, '/login')
-api.add_resource(Logout, '/logout')
-api.add_resource(TransactionResource, '/transaction')
-app.add_resource(CategoryResource, '/category')
-app.add_resource(BudgetResource, '/budget')
 
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)  
+    app.run(port=5555, debug=True)

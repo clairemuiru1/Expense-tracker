@@ -1,5 +1,6 @@
 from app import db, bcrypt, app
 from models import User, Transaction, Category, Budget
+from datetime import datetime  # Add this import
 
 def seed_users(users_data):
     print(":bust_in_silhouette: Seeding users...")
@@ -22,6 +23,9 @@ def seed_categories(categories_data):
 def seed_transactions(transactions_data):
     print(":money_with_wings: Seeding transactions...")
     for transaction_data in transactions_data:
+        # Convert the date string to a datetime object
+        transaction_data['date'] = datetime.strptime(transaction_data['date'], '%Y-%m-%dT%H:%M:%S')
+        
         transaction = Transaction(**transaction_data)
         db.session.add(transaction)
     db.session.commit()
