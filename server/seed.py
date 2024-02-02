@@ -2,6 +2,10 @@ from app import db, bcrypt, app
 from models import User, Transaction, Category, Budget
 from datetime import datetime  # Add this import
 
+with app.app_context():
+    db.drop_all()
+    db.create_all()
+    
 def seed_users(users_data):
     print(":bust_in_silhouette: Seeding users...")
     for user_data in users_data:
