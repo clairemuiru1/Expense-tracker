@@ -169,7 +169,19 @@ class TransactionResource(Resource):
         return response
 
 class CategoryResource(Resource):
-    pass
+    def get(self):
+        categories = []
+        for category in Category.query.all():
+            category_dict = {
+                "id": category.id,
+                "name": category.name,
+            }
+            category.append(category_dict)
+
+        response = make_response(
+            jsonify(categories)
+        )
+        return response
 
 
 class BudgetResource(Resource):
