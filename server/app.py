@@ -121,10 +121,13 @@ def auth():
 
 class CheckSession(Resource):
     def get(self):
-        if not session.get('logged_in'):
-            return render_template('login.html')
-        else:
-            return "Logged in currently"
+        
+        user_id = session['user_id']
+        if user_id:
+            user = User.query.filter(User.id == user_id).first()
+            return user.to_dict(), 200
+        
+        return {}, 401
 
 
 class TransactionForm(FlaskForm):
