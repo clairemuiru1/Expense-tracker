@@ -7,7 +7,7 @@ from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, validators
+from wtforms import StringField, PasswordField, validators, IntegerField
 from sqlalchemy.exc import IntegrityError
 from models import db, Transaction, Budget, Category, User
 from flask_cors import CORS
@@ -94,7 +94,7 @@ class Login(Resource):
                 'user': username,
                 'expiration': str(datetime.utcnow() + timedelta(seconds=120))
             },
-                app.config['SECRET_KEY'])
+            app.config['SECRET_KEY'])
 
             return {'token': token}
 
@@ -127,6 +127,11 @@ class CheckSession(Resource):
             return "Logged in currently"
 
 
+class TransactionForm(FlaskForm):
+    amount = IntegerField('amount', [validators.DataRequired()])
+    description = StringField('description', [validators.DataRequired()])
+    category = StringField('category', [validators.DataRequired()])
+
 class TransactionResource(Resource):
     def get(self):
         transactions = []
@@ -150,23 +155,35 @@ class TransactionResource(Resource):
         return response
 
     def post(self):
+        data = request.get_json()
 
-        new_transaction = Transaction(
-            amount = request.form['amount'],
-            description = request.form['description'],
-            Category_id = request.form['category_id'],
-        )
-        db.session.add(new_transaction)
-        db.session.commit()
+        if not data:
+            return {'error': 'Invalid JSON format'}, 400
 
-        response_dict = new_transaction.to_dict()
+        amount = data.get('amount')
+        description = data.get('description')
+        category_name = data.get('category')
 
-        response = make_response(
-            jsonify(response_dict),
-            200
-        )
+        if not amount or not description or not category_name:
+            return {'error': 'Missing required fields'}, 400
 
-        return response
+        # Check if the category exists
+        category = Category.query.filter_by(name=category_name).first()
+
+        if not category:
+            return {'error': f"Category '{category_name}' does not exist"}, 404
+
+        # Create a new transaction with the associated category
+        new_transaction = Transaction(amount=amount, description=description, category=category, date=datetime.utcnow())
+
+        try:
+            db.session.add(new_transaction)
+            db.session.commit()
+            return {'message': 'Transaction created successfully'}, 200
+        except IntegrityError:
+            db.session.rollback()
+            return {'error': 'Invalid JSON format'}, 500
+
 
 class CategoryResource(Resource):
     def get(self):
@@ -176,7 +193,7 @@ class CategoryResource(Resource):
                 "id": category.id,
                 "name": category.name,
             }
-            category.append(category_dict)
+            categories.append(category_dict)
 
         response = make_response(
             jsonify(categories)
@@ -191,11 +208,11 @@ class BudgetResource(Resource):
             budget_dict = {
                 "id": budget.id,
                 "amount": budget.amount,
-                "category":{
-                    budget.category.name
+                "category": {
+                    "name": budget.category.name
                 }
             }
-            budget.append(budget_dict)
+            budgets.append(budget_dict)
 
         response = make_response(
             jsonify(budgets),
