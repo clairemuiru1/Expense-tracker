@@ -91,8 +91,8 @@ class Login(Resource):
 
         if user and bcrypt.check_password_hash(user._password_hash, password):
             token = jwt.encode({
-                'user': username,
-                'expiration': str(datetime.utcnow() + timedelta(seconds=120))
+               'user': username,
+               'exp': datetime.utcnow() + timedelta(seconds=120)
             },
             app.config['SECRET_KEY'])
 
@@ -105,7 +105,7 @@ class Login(Resource):
 class Logout(Resource):
     def delete(self):
         session['user_id'] = None
-        return {'message': 'Logout successful'}, 204
+        return {'message': 'Logout successful'}, 200
 
 
 @app.route('/public')
