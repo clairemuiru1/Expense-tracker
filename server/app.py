@@ -200,6 +200,9 @@ class CategoryResource(Resource):
         )
         return response
 
+class BudgetForm(FlaskForm):
+    amount = StringField('amount',[validators.DataRequired()])
+    category = StringField('category', [validators.DataRequired()])
 
 class BudgetResource(Resource): 
     def get(self):
@@ -219,6 +222,35 @@ class BudgetResource(Resource):
             200
         )
         return response
+    
+    def post(self):
+        data = request.get_json()
+
+        if not data:
+            return {'error': 'Invalid JSON format'}, 400
+
+        amount = data.get('amount')
+        category_name = data.get('category')
+
+        if not amount or not category_name:
+            return {'error': 'Missing required fields'}, 400
+
+        # Check if the category exists
+        category = Category.query.filter_by(name=category_name).first()
+
+        if not category:
+            return {'error': f"Category '{category_name}' does not exist"}, 404
+
+        # Create a new budget with the associated category and user
+        new_budget = Budget(amount=amount, category=category)
+
+        try:
+            db.session.add(new_budget)
+            db.session.commit()
+            return {'message': 'Budget created successfully'}, 200
+        except IntegrityError:
+            db.session.rollback()
+            return {'error': 'Invalid JSON format'}, 500
 
 # class BudgetByID(Resource):
 #     def patch(self,id):
