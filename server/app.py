@@ -252,8 +252,65 @@ class BudgetResource(Resource):
             db.session.rollback()
             return {'error': 'Invalid JSON format'}, 500
 
-# class BudgetByID(Resource):
-#     def patch(self,id):
+class BudgetByID(Resource):
+    def get(self, id):
+        budget = Budget.query.get(id)
+
+        if not budget:
+            return {'error': f'Budget with id {id} not found'}, 404
+
+        budget_dict = {
+            "id": budget.id,
+            "amount": budget.amount,
+            "user_id": budget.User_id,
+            "category_id": budget.Category_id
+        }
+
+        response = make_response(
+            jsonify(budget_dict),
+            200
+        )
+        return response
+    
+    def patch(self, id):
+        data = request.get_json()
+
+        if not data:
+            return {'error': 'Invalid JSON format'}, 400
+
+        new_amount = data.get('amount')
+
+        if not new_amount:
+            return {'error': 'Missing required fields'}, 400
+
+        budget = Budget.query.get(id)
+
+        if not budget:
+            return {'error': f'Budget with id {id} not found'}, 404
+
+        budget.amount = new_amount
+
+        try:
+            db.session.commit()
+            return {'message': 'Budget updated successfully'}, 200
+        except IntegrityError:
+            db.session.rollback()
+            return {'error': 'Invalid JSON format'}, 500
+
+    def delete(self,id):
+        budget = Budget.query.get(id)
+
+        if not budget:
+            return {'error': f'Budget with id {id} not found'}, 404
+
+        try:
+            db.session.delete(budget)
+            db.session.commit()
+            return {'message': 'Budget deleted successfully'}, 200
+        except IntegrityError:
+            db.session.rollback()
+            return {'error': 'Error deleting the budget'}, 500
+
 
         
 api.add_resource(Signup, '/signup', endpoint='signup')
@@ -263,6 +320,7 @@ api.add_resource(Logout, '/logout', endpoint='logout')
 api.add_resource(TransactionResource, '/transactions')
 api.add_resource(CategoryResource, '/categories')
 api.add_resource(BudgetResource, '/budgets')
+api.add_resource(BudgetByID, '/budgets/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
