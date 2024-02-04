@@ -184,10 +184,29 @@ class CategoryResource(Resource):
         return response
 
 
-class BudgetResource(Resource):
-    pass
+class BudgetResource(Resource): 
+    def get(self):
+        budgets = []
+        for budget in Budget.query.all():
+            budget_dict = {
+                "id": budget.id,
+                "amount": budget.amount,
+                "category":{
+                    budget.category.name
+                }
+            }
+            budget.append(budget_dict)
 
+        response = make_response(
+            jsonify(budgets),
+            200
+        )
+        return response
 
+# class BudgetByID(Resource):
+#     def patch(self,id):
+
+        
 api.add_resource(Signup, '/signup', endpoint='signup')
 api.add_resource(CheckSession, '/check_session', endpoint='check_session')
 api.add_resource(Login, '/login', endpoint='login')
