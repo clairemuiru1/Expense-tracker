@@ -1,0 +1,47 @@
+.signup-container {
+    /* display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100vh; */
+   
+      width: 100%;
+      height: 100vh;
+      display: grid;
+      justify-content: center;
+      align-items: center;
+      background-color: wheat;
+      /* Set the height of the container to full viewport height */
+  }
+  
+  .signup-form {
+    flex: 1; /* Take up remaining space */
+    padding: 50px; /* Adjust padding as needed */
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.3s;
+  }
+  
+  .signup-image {
+    flex: 1; /* Take up remaining space */
+    background: url('your-image-url.jpg') no-repeat center center;
+    background-size: cover; /* Ensure the image covers the entire space */
+  }
+  
+  @media (max-width: 100px) {
+    /* Adjust layout for smaller screens if needed */
+    .signup-container {
+      flex-direction: column;
+      height: auto; /* Reset height for smaller screens */
+    }
+    
+    .signup-image, .signup-form {
+      width: 100%; /* Ensure both components take full width on smaller screens */
+      flex: none; /* Reset flex property */
+    }
+  }
+  

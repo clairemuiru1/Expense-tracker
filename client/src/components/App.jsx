@@ -1,10 +1,10 @@
 import React from 'react'
-import SignUp from './SignUp'
+import SwitchLogin from './SwitchLogin'
 
 function App() {
   return (
     <div>
-      <SignUp />
+      <SwitchLogin />
     </div>
   )
 }
