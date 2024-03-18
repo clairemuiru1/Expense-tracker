@@ -144,11 +144,13 @@ class TransactionResource(Resource):
                 "amount": transaction.amount,
                 "date": transaction.date,
                 "description": transaction.description,
-                "category": {
+                "category": {}
+            }
+            if transaction.category:
+                transaction_dict["category"] = {
                     "id": transaction.category.id,
                     "name": transaction.category.name
                 }
-            }
             transactions.append(transaction_dict)
 
         response = make_response(
@@ -167,25 +169,23 @@ class TransactionResource(Resource):
         description = data.get('description')
         category_name = data.get('category')
 
-        if not amount or not description or not category_name:
+        if not all([amount, description, category_name]):
             return {'error': 'Missing required fields'}, 400
 
-        # Check if the category exists
         category = Category.query.filter_by(name=category_name).first()
 
         if not category:
             return {'error': f"Category '{category_name}' does not exist"}, 404
 
-        # Create a new transaction with the associated category
         new_transaction = Transaction(amount=amount, description=description, category=category, date=datetime.utcnow())
 
         try:
             db.session.add(new_transaction)
             db.session.commit()
             return {'message': 'Transaction created successfully'}, 200
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
-            return {'error': 'Invalid JSON format'}, 500
+            return {'error': str(e)}, 500
 
 
 class CategoryResource(Resource):
