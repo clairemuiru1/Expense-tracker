@@ -1,0 +1,36 @@
+.container {
+    display: grid;
+    justify-content: center; /* Center the grid horizontally */
+    text-align: center; /* Center the text within the grid */
+    margin-top: 30px;
+}
+
+.title {
+    font-size: 30px;
+    font-weight: 500;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding: 10px;
+    grid-gap: 3%;;
+}
+
+.column {
+    background-color: lightblue;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.column h2 {
+    color: #333;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.column p {
+    color: #333;
+}

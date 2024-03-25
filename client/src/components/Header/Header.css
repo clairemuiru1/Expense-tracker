@@ -1,0 +1,52 @@
+.header {
+    width: 80%; /* Set the width to 80% */
+    height: 40vw;
+    margin: 30px auto;
+    background: url('https://www.investopedia.com/thmb/GPqNgD17W3ubWELDzUbqPx1_SNQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Term-Definitions_Zero-based-budgeting-101715d3484b488581579d0a729a6d47.jpg') no-repeat;
+    background-size: cover; /* Use cover to make the background image cover the entire container */
+    position: relative;
+  }  
+.header-contents{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 1.5vw;
+    max-width: 50%;
+    bottom: 10%;
+    left: 6vw;
+    animation: fadeIn 3s;
+}
+.header h2{
+    font-weight: 500;
+    color: black;
+    font-size: max(3.5vw, 20px);
+}
+.header p{
+    color: white;
+    font-size: 1.vw;
+}
+.header-contents button{
+    border: none;
+    color: #747474;
+    font-weight: 500;
+    padding: 1vw 2.3vw;
+    font-size: max(1vw 13px);
+    border-radius: 50px;
+}
+@media (max-width:1050px){
+    .header-contents{
+        max-width: 45%;
+    }
+}
+@media (max-width:750px){
+    .header-contents p{
+        display: none;
+    }
+    .header-contents{
+        max-width: 65%;
+    }
+    .header-contents button{
+        padding: 2vw 4vw;
+    }
+}
