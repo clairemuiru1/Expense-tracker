@@ -1,0 +1,13 @@
+.fc-header-toolbar .fc-prev-button,
+.fc-header-toolbar .fc-next-button,
+.fc-header-toolbar .fc-today-button,
+.fc-header-toolbar .fc-dayGridMonth-button,
+.fc-header-toolbar .fc-timeGridWeek-button,
+.fc-header-toolbar .fc-timeGridDay-button {
+  background-color: lightblue;
+  border-color: lightblue; 
+  color: #fff; 
+}
+
+
+  

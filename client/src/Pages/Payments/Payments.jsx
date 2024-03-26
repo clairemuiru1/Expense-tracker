@@ -4,7 +4,7 @@ import "./Payments.css"
 function Payments() {
   return (
     <div>
-      
+      Payments
     </div>
   )
 }
