@@ -1,4 +1,5 @@
 # Expense-tracker
+is a full-stack project with a dynamic database 
 
 The app helps a user to streamline budgeting, track spending, and plan ahead for better financial management."
 
