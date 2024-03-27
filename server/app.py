@@ -172,16 +172,34 @@ class TransactionResource(Resource):
         if not all([amount, description, category_name]):
             return {'error': 'Missing required fields'}, 400
 
+        # Convert amount to integer
+        try:
+            amount = int(amount)
+        except ValueError:
+            return {'error': 'Amount must be a valid integer'}, 400
+
         category = Category.query.filter_by(name=category_name).first()
 
         if not category:
             return {'error': f"Category '{category_name}' does not exist"}, 404
+
+        # Deduct transaction amount from category budget
+        budget = Budget.query.filter_by(Category_id=category.id).first()
+
+        if not budget:
+            return {'error': f"No budget found for category '{category_name}'"}, 404
+
+        budget.amount -= amount
 
         new_transaction = Transaction(amount=amount, description=description, category=category, date=datetime.utcnow())
 
         try:
             db.session.add(new_transaction)
             db.session.commit()
+
+            # Update category budget in the database
+            db.session.commit()
+
             return {'message': 'Transaction created successfully'}, 200
         except IntegrityError as e:
             db.session.rollback()
