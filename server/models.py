@@ -55,3 +55,8 @@ class Budget(db.Model, SerializerMixin):
     amount = db.Column(db.Integer, nullable=False)
     User_id = db.Column( db.Integer, db.ForeignKey('user.id'))
     Category_id = db.Column(db.Integer,db.ForeignKey('category.id'))
+
+class Bill(db.Model, SerializerMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Integer, nullable=False)
+    date=db.Column(db.Date, nullable=False)

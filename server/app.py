@@ -9,7 +9,7 @@ from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, validators, IntegerField
 from sqlalchemy.exc import IntegrityError
-from models import db, Transaction, Budget, Category, User
+from models import db, Transaction, Budget, Category, User, Bill
 from flask_cors import CORS
 from flask_restful import reqparse
 import jwt
@@ -24,6 +24,7 @@ app.config['SECRET_KEY'] = b'BM3\x1d\x16z!\x0e:\x8b&\xe6'
 db.init_app(app)
 bcrypt = Bcrypt(app)
 api = Api(app)
+migrate = Migrate(app, db)
 CORS(app)
 
 
@@ -332,8 +333,56 @@ class BudgetByID(Resource):
             db.session.rollback()
             return {'error': 'Error deleting the budget'}, 500
 
+class BillResource(Resource):
+    def get(self, bill_id):
+    
+        bill = Bill.query.get(bill_id)
 
-        
+    
+        if not bill:
+            return {'error': f'Bill with id {bill_id} not found'}, 404
+
+        bill_dict = {
+            "id": bill.id,
+            "amount": bill.amount,
+            "date": bill.date.strftime('%Y-%m-%d')  # Assuming you want date in a specific format
+        }
+
+        response = make_response(jsonify(bill_dict), 200)
+
+        return response
+    
+    from datetime import datetime
+
+class BillResource(Resource):
+    def post(self):
+        data = request.get_json()
+
+        if not data:
+            return {'error': 'Invalid JSON format'}, 400
+
+        amount = data.get('amount')
+        date_str = data.get('date')
+
+        if not amount or not date_str:
+            return {'error': 'Missing required fields'}, 400
+
+        try:
+            # Convert date string to Python date object
+            date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return {'error': 'Invalid date format. Please provide date in YYYY-MM-DD format.'}, 400
+
+        new_bill = Bill(amount=amount, date=date)
+
+        try:
+            db.session.add(new_bill)
+            db.session.commit()
+            return {'message': 'Bill created successfully'}, 200
+        except IntegrityError:
+            db.session.rollback()
+            return {'error': 'Failed to create bill'}, 500
+
 api.add_resource(Signup, '/signup', endpoint='signup')
 api.add_resource(CheckSession, '/check_session', endpoint='check_session')
 api.add_resource(Login, '/login', endpoint='login')
@@ -342,6 +391,7 @@ api.add_resource(TransactionResource, '/transactions')
 api.add_resource(CategoryResource, '/categories')
 api.add_resource(BudgetResource, '/budgets')
 api.add_resource(BudgetByID, '/budgets/<int:id>')
+api.add_resource(BillResource, '/bills')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
