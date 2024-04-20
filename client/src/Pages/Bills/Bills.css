@@ -8,5 +8,6 @@
   border-color: lightblue; 
   color: #fff; 
 }
-
-  
+.title{
+  font-style: bold;
+}

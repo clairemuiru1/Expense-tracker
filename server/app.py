@@ -344,6 +344,7 @@ class BillResource(Resource):
 
         bill_dict = {
             "id": bill.id,
+            "title": bill.title,
             "amount": bill.amount,
             "date": bill.date.strftime('%Y-%m-%d')  # Assuming you want date in a specific format
         }
@@ -361,10 +362,11 @@ class BillResource(Resource):
         if not data:
             return {'error': 'Invalid JSON format'}, 400
 
+        bill_title = data.get('bill_title')
         amount = data.get('amount')
         date_str = data.get('date')
 
-        if not amount or not date_str:
+        if not amount or not date_str or not bill_title:
             return {'error': 'Missing required fields'}, 400
 
         try:
@@ -373,7 +375,7 @@ class BillResource(Resource):
         except ValueError:
             return {'error': 'Invalid date format. Please provide date in YYYY-MM-DD format.'}, 400
 
-        new_bill = Bill(amount=amount, date=date)
+        new_bill = Bill(amount=amount, date=date, bill_title=bill_title)
 
         try:
             db.session.add(new_bill)
