@@ -34,6 +34,7 @@ class User(db.Model):
 
     transactions = db.relationship('Transaction', backref='user')
     budgets = db.relationship('Budget', backref='user')
+    bills = db.relationship('Bill', backref='user')
 
 class Transaction(db.Model ,SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,3 +62,6 @@ class Bill(db.Model, SerializerMixin):
     bill_title = db.Column(db.String, nullable=False, default='')
     amount = db.Column(db.Integer, nullable=False)
     date=db.Column(db.Date, nullable=False)
+
+    User_id = db.Column( db.Integer, db.ForeignKey('user.id'))
+    

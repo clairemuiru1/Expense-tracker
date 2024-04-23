@@ -1,5 +1,5 @@
 from app import db, bcrypt, app
-from models import User, Transaction, Category, Budget
+from models import User, Transaction, Category, Budget, Bill
 from datetime import datetime  # Add this import
 
 with app.app_context():
@@ -43,6 +43,19 @@ def seed_budgets(budgets_data):
     db.session.commit()
     print("Budget seeding completed.")
 
+from datetime import datetime
+
+def seed_bills(bills_data):
+    print(":moneybag: Seeding bills...")
+    for bill_data in bills_data:
+        # Convert the date string to a Python date object
+        bill_data['date'] = datetime.strptime(bill_data['date'], '%Y-%m-%d')
+        
+        bill = Bill(**bill_data)
+        db.session.add(bill)
+    db.session.commit()
+    print("Bill seeding completed.")
+    
 if __name__ == '__main__':
     categories_data = [
         {"name": "Groceries"},
@@ -68,7 +81,23 @@ if __name__ == '__main__':
         # Add more budgets as needed
     ]
 
+    bills_data = [
+        {"bill_title": "Rent", "amount": 1000, "date": "2024-04-01", "User_id": 1},
+        {"bill_title": "Internet", "amount": 50, "date": "2024-04-10", "User_id": 2},
+        {"bill_title": "Phone", "amount": 30, "date": "2024-04-15", "User_id": 3},
+        # Add more bills as needed
+    ]
+
+    users_data = [
+        {"username": "user1", "email": "user1@example.com", "password_hash": "password1"},
+        {"username": "user2", "email": "user2@example.com", "password_hash": "password2"},
+        {"username": "user3", "email": "user3@example.com", "password_hash": "password3"},
+        # Add more users as needed
+    ]
+
     with app.app_context():
         seed_categories(categories_data)
         seed_transactions(transactions_data)
         seed_budgets(budgets_data)
+        seed_bills(bills_data)
+        seed_users(users_data)
