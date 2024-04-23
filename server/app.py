@@ -13,6 +13,7 @@ from models import db, Transaction, Budget, Category, User, Bill
 from flask_cors import CORS
 from flask_restful import reqparse
 import jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -20,6 +21,12 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = b'BM3\x1d\x16z!\x0e:\x8b&\xe6'
+app.config['JWT_TOKEN_LOCATION'] = ['headers', 'query_string']
+app.config['JWT_HEADER_NAME'] = 'Authorization'
+app.config['JWT_HEADER_TYPE'] = 'Bearer'
+app.config['JWT_QUERY_STRING_NAME'] = 'token'
+app.config['JWT_QUERY_STRING_VALUE_PREFIX'] = 'Bearer'
+
 
 db.init_app(app)
 bcrypt = Bcrypt(app)
@@ -72,6 +79,14 @@ class Signup(Resource):
         try:
             db.session.add(new_user)
             db.session.commit()
+
+            # Initialize user's profile with zero bills, budgets, and transactions
+            new_user.bills = []
+            new_user.budgets = []
+            new_user.transactions = []
+
+            db.session.commit()
+
             return {'message': 'User created successfully'}, 200
         except IntegrityError:
             db.session.rollback()
@@ -245,6 +260,7 @@ class BudgetResource(Resource):
         )
         return response
     
+    @jwt_required()
     def post(self):
         data = request.get_json()
 
@@ -263,8 +279,11 @@ class BudgetResource(Resource):
         if not category:
             return {'error': f"Category '{category_name}' does not exist"}, 404
 
+        # Get the authenticated user from the JWT token
+        user = get_jwt_identity()
+
         # Create a new budget with the associated category and user
-        new_budget = Budget(amount=amount, category=category)
+        new_budget = Budget(amount=amount, category=category, user=user)
 
         try:
             db.session.add(new_budget)

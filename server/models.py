@@ -4,7 +4,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime
 from flask_bcrypt import Bcrypt
 
-
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
@@ -36,13 +35,13 @@ class User(db.Model):
     budgets = db.relationship('Budget', backref='user')
     bills = db.relationship('Bill', backref='user')
 
-class Transaction(db.Model ,SerializerMixin):
+class Transaction(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    description = db.Column(db.String , nullable=True)
-    User_id = db.Column( db.Integer, db.ForeignKey('user.id'))
-    Category_id = db.Column(db.Integer,db.ForeignKey('category.id'))
+    description = db.Column(db.String, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 
 class Category(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -54,14 +53,12 @@ class Category(db.Model, SerializerMixin):
 class Budget(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer, nullable=False)
-    User_id = db.Column( db.Integer, db.ForeignKey('user.id'))
-    Category_id = db.Column(db.Integer,db.ForeignKey('category.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 
 class Bill(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     bill_title = db.Column(db.String, nullable=False, default='')
     amount = db.Column(db.Integer, nullable=False)
-    date=db.Column(db.Date, nullable=False)
-
-    User_id = db.Column( db.Integer, db.ForeignKey('user.id'))
-    
+    date = db.Column(db.Date, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
