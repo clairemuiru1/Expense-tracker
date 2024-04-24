@@ -52,5 +52,20 @@ h2{
     font-size: 15px;
     cursor: pointer;
   }
-
+  .action-container {
+    display: flex;
+    align-items: center;
+}
+.edit {
+    cursor: pointer;
+    background: transparent;
+    margin-right: 10px; 
+    border: 1px solid rgb(172, 71, 255);
+    border-radius: 50%; /* Set border-radius to 50% */
+    width: 50px; /*Adjust width to desired size */
+    height: 50px; /*Adjust height to desired size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   

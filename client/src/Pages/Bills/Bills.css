@@ -11,3 +11,20 @@
 .title{
   font-style: bold;
 }
+.action-buttons {
+  display: flex;
+  align-items: center; 
+}
+
+.edit,
+.delete {
+  cursor: pointer;
+  margin-top: 10px;
+  margin-right: 10px; 
+}
+
+.title,
+.amount {
+  margin-right: 5px; 
+}
+
